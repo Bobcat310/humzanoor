@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Humza Noor Sattari</title>
+<meta name="description" content="Software engineer building LLM systems, data pipelines and production backends. I measure whether AI systems actually work.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0f14; --panel:#141821; --panel2:#1a1f2b; --rule:#242b39;
+  --fg:#e8eaf0; --muted:#8b93a7; --dim:#5d6578;
+  --accent:#5eead4; --accent2:#818cf8; --warn:#fbbf24; --bad:#f87171;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --maxw:860px;
+}
+:root[data-theme="light"]{
+  --bg:#fcfcfd; --panel:#ffffff; --panel2:#f5f6f9; --rule:#e4e7ee;
+  --fg:#11141b; --muted:#5b6376; --dim:#8a92a4;
+  --accent:#0d9488; --accent2:#4f46e5; --warn:#b45309; --bad:#dc2626;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+
+/* ---------- ambient grid ---------- */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:
+    linear-gradient(var(--rule) 1px,transparent 1px),
+    linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 20%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 20%,transparent 75%);
+}
+main{position:relative;z-index:1}
+
+/* ---------- theme toggle ---------- */
+.toggle{
+  position:fixed;top:18px;right:18px;z-index:10;
+  width:38px;height:38px;border-radius:9px;cursor:pointer;
+  background:var(--panel);border:1px solid var(--rule);color:var(--muted);
+  display:grid;place-items:center;font-size:15px;
+  transition:color .2s,border-color .2s;
+}
+.toggle:hover{color:var(--accent);border-color:var(--accent)}
+
+/* ---------- hero ---------- */
+header{padding:96px 0 56px}
+.tag{
+  font-family:var(--mono);font-size:12px;color:var(--accent);
+  letter-spacing:.08em;margin:0 0 18px;display:flex;align-items:center;gap:8px;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);
+  animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+h1{font-size:46px;font-weight:700;letter-spacing:-.03em;margin:0 0 20px;line-height:1.08}
+@media(max-width:600px){h1{font-size:34px}header{padding:72px 0 44px}}
+.lede{font-size:20px;line-height:1.55;color:var(--muted);margin:0 0 10px;max-width:60ch}
+.lede b{color:var(--fg);font-weight:600}
+.loc{font-family:var(--mono);font-size:13px;color:var(--dim);margin:22px 0 0}
+.links{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
+.links a{
+  font-family:var(--mono);font-size:13px;text-decoration:none;
+  color:var(--muted);background:var(--panel);border:1px solid var(--rule);
+  padding:7px 13px;border-radius:7px;transition:all .18s;
+}
+.links a:hover{color:var(--accent);border-color:var(--accent);transform:translateY(-1px)}
+
+/* ---------- sections ---------- */
+section{padding:52px 0;border-top:1px solid var(--rule)}
+h2{
+  font-family:var(--mono);font-size:12px;font-weight:500;text-transform:uppercase;
+  letter-spacing:.14em;color:var(--dim);margin:0 0 8px;
+}
+.sub{font-size:15px;color:var(--muted);margin:0 0 28px;max-width:56ch}
+
+/* ---------- failure taxonomy ---------- */
+.fail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+@media(max-width:700px){.fail-grid{grid-template-columns:repeat(2,1fr)}}
+.fail-btn{
+  background:var(--panel);border:1px solid var(--rule);border-radius:9px;
+  padding:13px 12px;cursor:pointer;text-align:left;color:var(--muted);
+  font-family:inherit;font-size:13.5px;line-height:1.35;transition:all .18s;
+}
+.fail-btn:hover{border-color:var(--dim);color:var(--fg)}
+.fail-btn[aria-selected="true"]{
+  border-color:var(--accent);color:var(--fg);background:var(--panel2);
+}
+.fail-btn .n{display:block;font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-bottom:5px}
+.fail-btn[aria-selected="true"] .n{color:var(--accent)}
+
+.fail-panel{
+  background:var(--panel);border:1px solid var(--rule);border-radius:11px;
+  padding:22px;min-height:188px;
+}
+.fail-panel h4{margin:0 0 10px;font-size:16.5px;font-weight:600}
+.fail-panel p{margin:0 0 14px;color:var(--muted);font-size:15px}
+.fail-panel p:last-child{margin-bottom:0}
+.snippet{
+  font-family:var(--mono);font-size:12.5px;line-height:1.75;
+  background:var(--bg);border:1px solid var(--rule);border-radius:7px;
+  padding:13px 15px;overflow-x:auto;white-space:pre;color:var(--muted);
+}
+.snippet .b{color:var(--bad)}
+.snippet .g{color:var(--accent)}
+.snippet .c{color:var(--dim)}
+.fade{animation:fade .28s ease}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ---------- projects ---------- */
+.proj{
+  background:var(--panel);border:1px solid var(--rule);border-radius:11px;
+  margin-bottom:12px;overflow:hidden;transition:border-color .2s;
+}
+.proj:hover{border-color:var(--dim)}
+.proj[open]{border-color:var(--accent2)}
+.proj summary{
+  padding:19px 22px;cursor:pointer;list-style:none;display:flex;
+  justify-content:space-between;align-items:flex-start;gap:16px;
+}
+.proj summary::-webkit-details-marker{display:none}
+.proj h3{margin:0 0 5px;font-size:17.5px;font-weight:600;letter-spacing:-.01em}
+.proj .stack{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin:0}
+.chev{color:var(--dim);font-size:13px;flex-shrink:0;margin-top:4px;transition:transform .22s}
+.proj[open] .chev{transform:rotate(90deg);color:var(--accent2)}
+.proj-body{padding:0 22px 22px;animation:fade .3s ease}
+.proj-body p{margin:0 0 13px;color:var(--muted);font-size:15px}
+.metric{
+  display:inline-flex;align-items:baseline;gap:9px;margin-top:6px;
+  font-family:var(--mono);font-size:13px;
+  background:var(--panel2);border:1px solid var(--rule);
+  border-radius:7px;padding:9px 14px;
+}
+.metric b{color:var(--accent);font-size:16px;font-weight:600}
+
+/* ---------- architecture toggle ---------- */
+.arch{margin:18px 0 6px}
+.arch-tabs{display:inline-flex;background:var(--panel2);border:1px solid var(--rule);
+  border-radius:8px;padding:3px;gap:3px;margin-bottom:14px}
+.arch-tabs button{
+  font-family:var(--mono);font-size:11.5px;padding:6px 13px;border-radius:6px;
+  border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .18s;
+}
+.arch-tabs button[aria-selected="true"]{background:var(--bg);color:var(--accent)}
+.arch svg{width:100%;height:auto;display:block}
+.arch-note{font-family:var(--mono);font-size:12px;color:var(--dim);margin:10px 0 0}
+
+/* ---------- stack ---------- */
+.stack-row{display:flex;gap:14px;align-items:baseline;margin-bottom:14px;flex-wrap:wrap}
+.stack-label{
+  font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--dim);width:118px;flex-shrink:0;
+}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{
+  font-family:var(--mono);font-size:12px;padding:4px 10px;border-radius:6px;
+  background:var(--panel);border:1px solid var(--rule);color:var(--muted);
+}
+.pill.hot{border-color:color-mix(in srgb,var(--accent) 45%,transparent);color:var(--accent)}
+.pill.new{border-style:dashed;color:var(--dim)}
+
+/* ---------- experience ---------- */
+.job{display:flex;gap:18px;padding:15px 0;border-bottom:1px solid var(--rule)}
+.job:last-child{border-bottom:none}
+.job-when{font-family:var(--mono);font-size:12px;color:var(--dim);width:108px;flex-shrink:0;padding-top:3px}
+.job-what h4{margin:0 0 4px;font-size:15.5px;font-weight:600}
+.job-what p{margin:0;font-size:14.5px;color:var(--muted)}
+@media(max-width:600px){
+  .job{flex-direction:column;gap:5px}
+  .job-when{width:auto}
+  .stack-row{flex-direction:column;gap:7px}
+  .stack-label{width:auto}
+}
+
+/* ---------- chat teaser ---------- */
+.chat{
+  background:var(--panel);border:1px solid var(--rule);border-radius:11px;padding:20px;
+}
+.chat-row{display:flex;gap:9px;margin-top:14px}
+.chat input{
+  flex:1;background:var(--bg);border:1px solid var(--rule);border-radius:8px;
+  padding:11px 14px;color:var(--fg);font-family:inherit;font-size:14.5px;
+}
+.chat input:focus{outline:none;border-color:var(--accent)}
+.chat button{
+  background:var(--accent);color:var(--bg);border:none;border-radius:8px;
+  padding:11px 18px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+}
+.chat-out{
+  margin-top:14px;font-size:14.5px;color:var(--muted);
+  border-left:2px solid var(--accent);padding-left:14px;display:none;
+}
+.chat-out.on{display:block;animation:fade .3s ease}
+
+footer{padding:44px 0 80px;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:12.5px;color:var(--dim)}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<button class="toggle" id="themeBtn" aria-label="Toggle theme">◐</button>
+
+<main>
+<div class="wrap">
+
+  <header>
+    <p class="tag"><span class="dot"></span>OPEN TO WORK</p>
+    <h1>Humza Noor Sattari</h1>
+    <p class="lede">I build LLM systems and <b>measure whether they actually work</b>. Backend services, data pipelines, and the evaluation that tells you the difference between a demo and a product.</p>
+    <p class="loc">Lahore, Pakistan · Remote or relocating · 3.5 years</p>
+    <div class="links">
+      <a href="mailto:humzanoor8@gmail.com">email</a>
+      <a href="https://github.com/Bobcat310">github</a>
+      <a href="https://www.linkedin.com/in/humza-noor/">linkedin</a>
+      <a href="https://www.kaggle.com/code/hnoor310">kaggle</a>
+    </div>
+  </header>
+
+  <section>
+    <h2>Four ways coding agents fail</h2>
+    <p class="sub">I benchmark coding agents for a living. These are the failure classes that show up again and again on real repositories. Click through them.</p>
+
+    <div class="fail-grid" role="tablist">
+      <button class="fail-btn" role="tab" aria-selected="true" data-i="0"><span class="n">01</span>Phantom APIs</button>
+      <button class="fail-btn" role="tab" aria-selected="false" data-i="1"><span class="n">02</span>Plausible params</button>
+      <button class="fail-btn" role="tab" aria-selected="false" data-i="2"><span class="n">03</span>Wrong tool</button>
+      <button class="fail-btn" role="tab" aria-selected="false" data-i="3"><span class="n">04</span>Confidently wrong</button>
+    </div>
+    <div class="fail-panel" id="failPanel"></div>
+  </section>
+
+  <section>
+    <h2>Selected work</h2>
+    <p class="sub">Three systems, opened up. Expand for the decisions rather than the summary.</p>
+
+    <details class="proj" open>
+      <summary>
+        <div><h3>Evaluation harnesses for LLM coding agents</h3>
+        <p class="stack">python · docker · yaml · claude, qwen · brio</p></div>
+        <span class="chev">▸</span>
+      </summary>
+      <div class="proj-body">
+        <p>Coding agents are easy to be impressed by and hard to evaluate. A model producing plausible code passes a casual demo and then fails on a real repository in ways nobody catches until it matters.</p>
+        <p>I design the tasks that catch it: multi-hop, tool-calling scenarios built from real GitHub repositories and APIs, each a specification defining the environment, the time constraint and the assertions determining success, run in isolated containers so every model faces identical conditions. Reference solutions are validated by an Oracle agent first, because a task that isn't solvable measures nothing.</p>
+        <p>The hard part is writing a task that's difficult enough to discriminate between models and unambiguous enough that correctness isn't a judgement call. A task where a reasonable person could argue the agent succeeded is a task that measures nothing at all.</p>
+        <div class="metric"><b>3</b> frontier models benchmarked across 3 task categories</div>
+      </div>
+    </details>
+
+    <details class="proj">
+      <summary>
+        <div><h3>LLM pipeline writing into a production CRM</h3>
+        <p class="stack">python · azure functions · logic apps · openai · salesforce</p></div>
+        <span class="chev">▸</span>
+      </summary>
+      <div class="proj-body">
+        <p>A client's team was researching companies by hand into Salesforce. Fifteen minutes a record, inconsistent between researchers, and capped at whatever one person could do in a day. The inconsistency was worse than the slowness: two researchers classified the same company differently, so the data couldn't be trusted downstream.</p>
+        <p>I built the full path. Scrapers and APIs for ingestion, OpenAI models for normalization and classification against a fixed schema, write-back into Salesforce, orchestrated over Azure Functions so stages scaled independently and a failure isolated instead of killing a run.</p>
+        <p>The inference was never the hard part. A non-deterministic step was writing into a system of record their sales team used daily, so a confidently wrong classification was worse than a failed run. Schema validation at the boundary with retry instead of write. Idempotent writes, because a duplicate is worse than a skip. And staged rollout of every prompt change across 100 records, then 500, then full volume: a prompt change is a deployment.</p>
+        <p>What stayed with me: schema validation catches malformed output, not wrong output. Sampled human review stayed permanently in the loop for exactly that reason.</p>
+        <div class="metric"><b>1,270+</b> companies in production, manual step removed</div>
+      </div>
+    </details>
+
+    <details class="proj">
+      <summary>
+        <div><h3>Rebuilding a GPU-bound service around a queue</h3>
+        <p class="stack">python · fastapi · celery · redis · cuda</p></div>
+        <span class="chev">▸</span>
+      </summary>
+      <div class="proj-body">
+        <p>An image segmentation service worked in testing and fell over in production. Requests ran synchronously: call the endpoint, run inference on the GPU, hold the connection open until done. Under real concurrency, latency climbed and requests timed out. The frustrating part was that the GPUs weren't saturated, because each job held a full device regardless of what it needed.</p>
+
+        <div class="arch">
+          <div class="arch-tabs" role="tablist">
+            <button role="tab" aria-selected="true" data-arch="0">before</button>
+            <button role="tab" aria-selected="false" data-arch="1">after</button>
+          </div>
+          <div id="archSvg"></div>
+          <p class="arch-note" id="archNote"></p>
+        </div>
+
+        <p>The decoupling was the insight. A synchronous request-response design cannot absorb bursty, long-running GPU work no matter how fast the model is, so the fix had to be architectural rather than an optimization. Throughput became a function of worker count and GPU partitioning, both tunable, and queue depth stopped affecting API responsiveness.</p>
+        <p>It generalizes: the interesting problem is usually one layer up from where it appears. This looked like a model performance problem and was a request lifecycle problem. Same instinct applies to LLM systems. When agent output is bad, the fix is more often in retrieval, context construction or the eval loop than in the prompt everyone is staring at.</p>
+      </div>
+    </details>
+  </section>
+
+  <section>
+    <h2>Stack</h2>
+    <p class="sub">Grouped honestly. The dashed ones are what I'm building with now, not what I'd claim in production.</p>
+    <div class="stack-row">
+      <span class="stack-label">Daily</span>
+      <div class="pills">
+        <span class="pill hot">Python</span><span class="pill hot">FastAPI</span><span class="pill hot">Celery</span>
+        <span class="pill hot">Redis</span><span class="pill hot">PostgreSQL</span><span class="pill hot">Docker</span>
+        <span class="pill hot">OpenAI / Anthropic APIs</span><span class="pill hot">Pandas</span>
+      </div>
+    </div>
+    <div class="stack-row">
+      <span class="stack-label">Comfortable</span>
+      <div class="pills">
+        <span class="pill">Azure Functions</span><span class="pill">Logic Apps</span><span class="pill">AWS</span>
+        <span class="pill">CI/CD</span><span class="pill">React</span><span class="pill">MongoDB</span>
+        <span class="pill">Scrapy</span><span class="pill">CUDA</span><span class="pill">Retool</span>
+      </div>
+    </div>
+    <div class="stack-row">
+      <span class="stack-label">Building with</span>
+      <div class="pills">
+        <span class="pill new">LangGraph</span><span class="pill new">LangChain</span><span class="pill new">RAG + eval</span>
+        <span class="pill new">TypeScript</span><span class="pill new">Spark</span><span class="pill new">Databricks</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Experience</h2>
+    <div class="job">
+      <div class="job-when">2025 — now</div>
+      <div class="job-what">
+        <h4>LLM Developer · Brio</h4>
+        <p>Agent evaluation and validation harnesses. Tool-calling scenarios across Google Workspace, Jira and Zendesk, with the Python validation code and gold-standard trajectories behind them. Review other engineers' scenarios for assertion quality.</p>
+      </div>
+    </div>
+    <div class="job">
+      <div class="job-when">2023 — 2025</div>
+      <div class="job-what">
+        <h4>Software Engineer · Nymble Leap</h4>
+        <p>Production backends and data pipelines. LLM enrichment on Azure, distributed scrapers across large US employers with pay rate and benefits extraction, FastAPI with Celery and Redis, client-facing dashboards in Retool and React.</p>
+      </div>
+    </div>
+    <div class="job">
+      <div class="job-when">2023</div>
+      <div class="job-what">
+        <h4>Business Analyst · Apallo</h4>
+        <p>Requirements and delivery coordination for an international client.</p>
+      </div>
+    </div>
+    <div class="job">
+      <div class="job-when">also</div>
+      <div class="job-what">
+        <h4>250+ client calls this year</h4>
+        <p>Requirements, demos, scoping and the calls where something went wrong. Led the engineering team on PriceNav, a fuel price forecasting platform, and ran that client relationship directly.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ask me something</h2>
+    <p class="sub">A grounded retrieval layer over a verified fact base, with an explicit refusal path. Under construction, and built the way I'd build it in production.</p>
+    <div class="chat">
+      <div class="chat-row">
+        <input id="q" placeholder="Does he have Spark experience?" aria-label="Ask a question">
+        <button id="ask">Ask</button>
+      </div>
+      <div class="chat-out" id="out"></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Built as one file, no framework. Reach me at <a href="mailto:humzanoor8@gmail.com">humzanoor8@gmail.com</a>.</p>
+  </footer>
+
+</div>
+</main>
+
+<script>
+/* theme */
+const root=document.documentElement, tb=document.getElementById('themeBtn');
+try{const s=localStorage.getItem('theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
+tb.onclick=()=>{
+  const cur=root.getAttribute('data-theme');
+  const dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const next=cur?(cur==='light'?'dark':'light'):(dark?'light':'dark');
+  root.setAttribute('data-theme',next);
+  try{localStorage.setItem('theme',next);}catch(e){}
+};
+
+/* failure taxonomy */
+const fails=[
+ {t:'Phantom API endpoints',
+  d:'The agent calls a method that does not exist. It is syntactically perfect, named exactly how the library <em>should</em> have named it, and fails only at runtime.',
+  why:'Caught by running the task in a real container against the real library, not by reading the diff.',
+  code:'<span class="c"># agent output</span>\nclient.<span class="b">batch_update_records</span>(records)\n\n<span class="c"># actual API</span>\nclient.<span class="g">bulk</span>.<span class="g">update</span>(records, batch_size=200)'},
+ {t:'Plausible but wrong parameters',
+  d:'The right function, called with arguments that look reasonable and quietly change behaviour. These are the expensive ones, because nothing errors.',
+  why:'Caught by assertions on resulting state, not on whether the call succeeded.',
+  code:'<span class="c"># agent output</span>\nretriever.search(q, <span class="b">top_k=3</span>, <span class="b">rerank=False</span>)\n\n<span class="c"># returns results. recall@10 drops 34%.</span>\n<span class="c"># no error, no warning, worse answers.</span>'},
+ {t:'Wrong tool for a understood task',
+  d:'The agent correctly understands the goal and reaches for the wrong capability. It reads a file when it should query, or shells out when a client exists.',
+  why:'Caught by trajectory comparison against a gold-standard path, not by output alone.',
+  code:'<span class="c"># task: find all open tickets for a customer</span>\n\n<span class="b">bash</span>(<span class="b">"grep -r customer_id ./tickets"</span>)\n\n<span class="c"># available, unused:</span>\n<span class="g">zendesk.search</span>(query=<span class="g">"requester:..."</span>)'},
+ {t:'Confidently wrong output',
+  d:'Well-formed, schema-valid, internally consistent and incorrect. This is the hardest class, because it passes every structural check you can write.',
+  why:'Cannot be caught by validation. Needs a gold-standard answer or a human in the loop. This is why I build eval sets rather than just validators.',
+  code:'<span class="c"># schema says: {"status": enum, "confidence": float}</span>\n\n{<span class="g">"status"</span>: <span class="g">"resolved"</span>, <span class="g">"confidence"</span>: <span class="g">0.94</span>}\n\n<span class="c"># valid JSON. valid enum. valid range.</span>\n<span class="c"># ticket is </span><span class="b">open</span><span class="c">.</span>'}
+];
+const fp=document.getElementById('failPanel');
+function drawFail(i){
+  const f=fails[i];
+  fp.className='fail-panel fade';
+  fp.innerHTML=`<h4>${f.t}</h4><p>${f.d}</p><div class="snippet">${f.code}</div><p style="margin-top:14px;font-size:14px">${f.why}</p>`;
+  void fp.offsetWidth;
+}
+document.querySelectorAll('.fail-btn').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.fail-btn').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');
+    drawFail(+b.dataset.i);
+  };
+});
+drawFail(0);
+
+/* architecture diagram */
+const C={fg:'currentColor'};
+const archs=[
+{note:'one request holds one GPU. p95 climbs with concurrency.',
+ svg:`<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" style="color:var(--muted)">
+ <g font-family="JetBrains Mono, monospace" font-size="11" fill="currentColor">
+ <rect x="8" y="48" width="92" height="40" rx="7" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <text x="54" y="72" text-anchor="middle">client</text>
+ <path d="M104 68 H176" stroke="currentColor" stroke-opacity=".4"/>
+ <path d="M170 64 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <rect x="180" y="48" width="104" height="40" rx="7" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <text x="232" y="72" text-anchor="middle">api</text>
+ <path d="M288 68 H360" stroke="var(--bad)" stroke-opacity=".85"/>
+ <path d="M354 64 l6 4 -6 4" fill="none" stroke="var(--bad)"/>
+ <text x="324" y="58" text-anchor="middle" fill="var(--bad)" font-size="10">blocks</text>
+ <rect x="364" y="48" width="104" height="40" rx="7" fill="none" stroke="var(--bad)" stroke-opacity=".6"/>
+ <text x="416" y="72" text-anchor="middle" fill="var(--bad)">gpu infer</text>
+ <text x="416" y="110" text-anchor="middle" font-size="10" opacity=".65">1 job = 1 full device</text>
+ <path d="M54 92 V124 H416 V92" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-dasharray="3 3"/>
+ <text x="235" y="140" text-anchor="middle" font-size="10" opacity=".55">connection open for the whole run</text>
+ </g></svg>`},
+{note:'api returns in ms. throughput scales with workers and gpu partitioning.',
+ svg:`<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" style="color:var(--muted)">
+ <g font-family="JetBrains Mono, monospace" font-size="11" fill="currentColor">
+ <rect x="8" y="48" width="86" height="40" rx="7" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <text x="51" y="72" text-anchor="middle">client</text>
+ <path d="M98 62 H162" stroke="currentColor" stroke-opacity=".4"/>
+ <path d="M156 58 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <path d="M162 78 H98" stroke="var(--accent)" stroke-opacity=".75"/>
+ <path d="M104 74 l-6 4 6 4" fill="none" stroke="var(--accent)"/>
+ <text x="130" y="96" text-anchor="middle" font-size="9" fill="var(--accent)">job id</text>
+ <rect x="166" y="48" width="86" height="40" rx="7" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <text x="209" y="72" text-anchor="middle">api</text>
+ <path d="M256 68 H308" stroke="currentColor" stroke-opacity=".4"/>
+ <path d="M302 64 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <rect x="312" y="48" width="86" height="40" rx="7" fill="none" stroke="var(--accent2)" stroke-opacity=".6"/>
+ <text x="355" y="72" text-anchor="middle" fill="var(--accent2)">redis q</text>
+ <path d="M402 68 H452" stroke="currentColor" stroke-opacity=".4"/>
+ <path d="M446 64 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <rect x="456" y="24" width="90" height="26" rx="6" fill="none" stroke="var(--accent)" stroke-opacity=".5"/>
+ <text x="501" y="41" text-anchor="middle" font-size="10" fill="var(--accent)">worker</text>
+ <rect x="456" y="56" width="90" height="26" rx="6" fill="none" stroke="var(--accent)" stroke-opacity=".5"/>
+ <text x="501" y="73" text-anchor="middle" font-size="10" fill="var(--accent)">worker</text>
+ <rect x="456" y="88" width="90" height="26" rx="6" fill="none" stroke="var(--accent)" stroke-opacity=".5"/>
+ <text x="501" y="105" text-anchor="middle" font-size="10" fill="var(--accent)">worker</text>
+ <path d="M550 69 H582" stroke="currentColor" stroke-opacity=".3"/>
+ <rect x="586" y="52" width="46" height="34" rx="6" fill="none" stroke="currentColor" stroke-opacity=".35"/>
+ <text x="609" y="73" text-anchor="middle" font-size="10">gpu</text>
+ <text x="609" y="104" text-anchor="middle" font-size="9" opacity=".6">shared</text>
+ </g></svg>`}
+];
+const archSvg=document.getElementById('archSvg'), archNote=document.getElementById('archNote');
+function drawArch(i){archSvg.innerHTML=archs[i].svg;archSvg.className='fade';archNote.textContent=archs[i].note;void archSvg.offsetWidth;}
+document.querySelectorAll('[data-arch]').forEach(b=>{
+  b.onclick=(e)=>{e.preventDefault();
+    document.querySelectorAll('[data-arch]').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');drawArch(+b.dataset.arch);};
+});
+drawArch(0);
+
+/* chat teaser */
+const out=document.getElementById('out');
+document.getElementById('ask').onclick=()=>{
+  const q=document.getElementById('q').value.trim();
+  out.className='chat-out on';
+  out.innerHTML = q
+    ? `Not live yet. When it is, it will answer from a verified fact base and say "I don't have that" rather than improvise. Until then, email me and you will get the real answer: <a href="mailto:humzanoor8@gmail.com?subject=Question&body=${encodeURIComponent(q)}" style="color:var(--accent)">send this question</a>.`
+    : `Type a question first.`;
+};
+document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('ask').click();});
+</script>
+
+</body>
+</html>
