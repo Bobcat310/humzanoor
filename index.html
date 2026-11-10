@@ -9,196 +9,182 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{
+/* ============ THEMES ============ */
+:root,
+:root[data-theme="midnight"]{
   --bg:#0d0f14; --panel:#141821; --panel2:#1a1f2b; --rule:#242b39;
   --fg:#e8eaf0; --muted:#8b93a7; --dim:#5d6578;
-  --accent:#5eead4; --accent2:#818cf8; --warn:#fbbf24; --bad:#f87171;
+  --accent:#5eead4; --accent2:#818cf8;
+  --c1:#5eead4; --c2:#818cf8; --c3:#fbbf24; --c4:#f472b6;
+  --ok:#4ade80; --warn:#fbbf24; --bad:#f87171;
+}
+:root[data-theme="paper"]{
+  --bg:#fcfcfa; --panel:#ffffff; --panel2:#f4f4f0; --rule:#e3e2dc;
+  --fg:#15140f; --muted:#5d5b53; --dim:#8c8a80;
+  --accent:#0d9488; --accent2:#4f46e5;
+  --c1:#0d9488; --c2:#4f46e5; --c3:#b45309; --c4:#be185d;
+  --ok:#15803d; --warn:#b45309; --bad:#dc2626;
+}
+:root[data-theme="ember"]{
+  --bg:#17120e; --panel:#201913; --panel2:#2a2119; --rule:#392d23;
+  --fg:#f2e9e1; --muted:#a99685; --dim:#7a685a;
+  --accent:#f59e0b; --accent2:#fb7185;
+  --c1:#f59e0b; --c2:#fb7185; --c3:#a3e635; --c4:#38bdf8;
+  --ok:#a3e635; --warn:#f59e0b; --bad:#fb7185;
+}
+:root{
   --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
   --maxw:860px;
-}
-:root[data-theme="light"]{
-  --bg:#fcfcfd; --panel:#ffffff; --panel2:#f5f6f9; --rule:#e4e7ee;
-  --fg:#11141b; --muted:#5b6376; --dim:#8a92a4;
-  --accent:#0d9488; --accent2:#4f46e5; --warn:#b45309; --bad:#dc2626;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
   margin:0;background:var(--bg);color:var(--fg);
   font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;
-  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  transition:background .3s,color .3s;
 }
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
-
-/* ---------- ambient grid ---------- */
 .grid-bg{
   position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
-  background-image:
-    linear-gradient(var(--rule) 1px,transparent 1px),
-    linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);
   background-size:52px 52px;
   mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 20%,transparent 75%);
   -webkit-mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 20%,transparent 75%);
 }
 main{position:relative;z-index:1}
 
-/* ---------- theme toggle ---------- */
-.toggle{
-  position:fixed;top:18px;right:18px;z-index:10;
-  width:38px;height:38px;border-radius:9px;cursor:pointer;
-  background:var(--panel);border:1px solid var(--rule);color:var(--muted);
-  display:grid;place-items:center;font-size:15px;
-  transition:color .2s,border-color .2s;
-}
-.toggle:hover{color:var(--accent);border-color:var(--accent)}
+/* ============ THEME PICKER ============ */
+.themes{position:fixed;top:16px;right:16px;z-index:20;display:flex;gap:6px;
+  background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:5px}
+.sw{width:22px;height:22px;border-radius:6px;cursor:pointer;border:1.5px solid transparent;
+  transition:transform .15s,border-color .15s;position:relative}
+.sw:hover{transform:scale(1.12)}
+.sw[aria-pressed="true"]{border-color:var(--fg)}
+.sw-midnight{background:linear-gradient(135deg,#0d0f14 48%,#5eead4 52%)}
+.sw-paper{background:linear-gradient(135deg,#fcfcfa 48%,#0d9488 52%)}
+.sw-ember{background:linear-gradient(135deg,#17120e 48%,#f59e0b 52%)}
 
-/* ---------- hero ---------- */
-header{padding:96px 0 56px}
-.tag{
-  font-family:var(--mono);font-size:12px;color:var(--accent);
-  letter-spacing:.08em;margin:0 0 18px;display:flex;align-items:center;gap:8px;
-}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);
-  animation:pulse 2.4s ease-in-out infinite}
+/* ============ HERO ============ */
+header{padding:92px 0 54px}
+.tag{font-family:var(--mono);font-size:12px;color:var(--ok);letter-spacing:.08em;
+  margin:0 0 18px;display:flex;align-items:center;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ok);animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
 h1{font-size:46px;font-weight:700;letter-spacing:-.03em;margin:0 0 20px;line-height:1.08}
-@media(max-width:600px){h1{font-size:34px}header{padding:72px 0 44px}}
+@media(max-width:600px){h1{font-size:34px}header{padding:74px 0 44px}}
 .lede{font-size:20px;line-height:1.55;color:var(--muted);margin:0 0 10px;max-width:60ch}
 .lede b{color:var(--fg);font-weight:600}
 .loc{font-family:var(--mono);font-size:13px;color:var(--dim);margin:22px 0 0}
 .links{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
-.links a{
-  font-family:var(--mono);font-size:13px;text-decoration:none;
-  color:var(--muted);background:var(--panel);border:1px solid var(--rule);
-  padding:7px 13px;border-radius:7px;transition:all .18s;
-}
+.links a{font-family:var(--mono);font-size:13px;text-decoration:none;color:var(--muted);
+  background:var(--panel);border:1px solid var(--rule);padding:7px 13px;border-radius:7px;transition:all .18s}
 .links a:hover{color:var(--accent);border-color:var(--accent);transform:translateY(-1px)}
 
-/* ---------- sections ---------- */
 section{padding:52px 0;border-top:1px solid var(--rule)}
-h2{
-  font-family:var(--mono);font-size:12px;font-weight:500;text-transform:uppercase;
-  letter-spacing:.14em;color:var(--dim);margin:0 0 8px;
-}
-.sub{font-size:15px;color:var(--muted);margin:0 0 28px;max-width:56ch}
+h2{font-family:var(--mono);font-size:12px;font-weight:500;text-transform:uppercase;
+  letter-spacing:.14em;color:var(--dim);margin:0 0 8px}
+.sub{font-size:15px;color:var(--muted);margin:0 0 28px;max-width:58ch}
+.legend{font-family:var(--mono);font-size:11.5px;color:var(--dim);display:flex;
+  flex-wrap:wrap;gap:14px;margin:-16px 0 22px}
+.legend i{display:inline-flex;align-items:center;gap:6px;font-style:normal}
+.legend b{width:8px;height:8px;border-radius:2px;display:inline-block}
 
-/* ---------- failure taxonomy ---------- */
+/* ============ FAILURE TAXONOMY ============ */
 .fail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
 @media(max-width:700px){.fail-grid{grid-template-columns:repeat(2,1fr)}}
-.fail-btn{
-  background:var(--panel);border:1px solid var(--rule);border-radius:9px;
-  padding:13px 12px;cursor:pointer;text-align:left;color:var(--muted);
-  font-family:inherit;font-size:13.5px;line-height:1.35;transition:all .18s;
-}
-.fail-btn:hover{border-color:var(--dim);color:var(--fg)}
-.fail-btn[aria-selected="true"]{
-  border-color:var(--accent);color:var(--fg);background:var(--panel2);
-}
-.fail-btn .n{display:block;font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-bottom:5px}
-.fail-btn[aria-selected="true"] .n{color:var(--accent)}
-
-.fail-panel{
-  background:var(--panel);border:1px solid var(--rule);border-radius:11px;
-  padding:22px;min-height:188px;
-}
-.fail-panel h4{margin:0 0 10px;font-size:16.5px;font-weight:600}
-.fail-panel p{margin:0 0 14px;color:var(--muted);font-size:15px}
-.fail-panel p:last-child{margin-bottom:0}
-.snippet{
-  font-family:var(--mono);font-size:12.5px;line-height:1.75;
-  background:var(--bg);border:1px solid var(--rule);border-radius:7px;
-  padding:13px 15px;overflow-x:auto;white-space:pre;color:var(--muted);
-}
+.fail-btn{background:var(--panel);border:1px solid var(--rule);border-radius:9px;
+  padding:13px 12px;cursor:pointer;text-align:left;color:var(--muted);font-family:inherit;
+  font-size:13.5px;line-height:1.35;transition:all .18s;border-left:3px solid var(--hue)}
+.fail-btn:hover{color:var(--fg)}
+.fail-btn[aria-selected="true"]{border-color:var(--hue);color:var(--fg);background:var(--panel2);
+  border-left-width:3px;box-shadow:0 0 0 1px var(--hue)}
+.fail-btn .n{display:block;font-family:var(--mono);font-size:10.5px;color:var(--hue);margin-bottom:5px;opacity:.8}
+.fail-panel{background:var(--panel);border:1px solid var(--rule);border-radius:11px;
+  padding:22px;min-height:196px;border-top:2px solid var(--hue)}
+.fail-panel h4{margin:0 0 4px;font-size:16.5px;font-weight:600}
+.sev{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 8px;border-radius:4px;margin-left:10px;vertical-align:2px}
+.sev-low{color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.sev-med{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.sev-high{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.fail-panel p{margin:12px 0 14px;color:var(--muted);font-size:15px}
+.snippet{font-family:var(--mono);font-size:12.5px;line-height:1.75;background:var(--bg);
+  border:1px solid var(--rule);border-radius:7px;padding:13px 15px;overflow-x:auto;
+  white-space:pre;color:var(--muted)}
 .snippet .b{color:var(--bad)}
-.snippet .g{color:var(--accent)}
+.snippet .g{color:var(--ok)}
 .snippet .c{color:var(--dim)}
+.catch{margin-top:14px;font-size:14px;color:var(--muted);
+  border-left:2px solid var(--hue);padding-left:12px}
 .fade{animation:fade .28s ease}
 @keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 
-/* ---------- projects ---------- */
-.proj{
-  background:var(--panel);border:1px solid var(--rule);border-radius:11px;
-  margin-bottom:12px;overflow:hidden;transition:border-color .2s;
-}
-.proj:hover{border-color:var(--dim)}
-.proj[open]{border-color:var(--accent2)}
-.proj summary{
-  padding:19px 22px;cursor:pointer;list-style:none;display:flex;
-  justify-content:space-between;align-items:flex-start;gap:16px;
-}
+/* ============ PROJECTS ============ */
+.proj{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--hue);
+  border-radius:11px;margin-bottom:12px;overflow:hidden;transition:border-color .2s}
+.proj:hover{border-color:var(--dim);border-left-color:var(--hue)}
+.proj[open]{border-color:var(--hue);border-left-color:var(--hue)}
+.proj summary{padding:19px 22px;cursor:pointer;list-style:none;display:flex;
+  justify-content:space-between;align-items:flex-start;gap:16px}
 .proj summary::-webkit-details-marker{display:none}
+.ptag{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--hue);display:block;margin-bottom:6px}
 .proj h3{margin:0 0 5px;font-size:17.5px;font-weight:600;letter-spacing:-.01em}
 .proj .stack{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin:0}
 .chev{color:var(--dim);font-size:13px;flex-shrink:0;margin-top:4px;transition:transform .22s}
-.proj[open] .chev{transform:rotate(90deg);color:var(--accent2)}
+.proj[open] .chev{transform:rotate(90deg);color:var(--hue)}
 .proj-body{padding:0 22px 22px;animation:fade .3s ease}
 .proj-body p{margin:0 0 13px;color:var(--muted);font-size:15px}
-.metric{
-  display:inline-flex;align-items:baseline;gap:9px;margin-top:6px;
-  font-family:var(--mono);font-size:13px;
-  background:var(--panel2);border:1px solid var(--rule);
-  border-radius:7px;padding:9px 14px;
-}
-.metric b{color:var(--accent);font-size:16px;font-weight:600}
+.metric{display:inline-flex;align-items:baseline;gap:9px;margin-top:6px;font-family:var(--mono);
+  font-size:13px;background:var(--panel2);border:1px solid var(--rule);
+  border-left:2px solid var(--hue);border-radius:7px;padding:9px 14px}
+.metric b{color:var(--hue);font-size:16px;font-weight:600}
 
-/* ---------- architecture toggle ---------- */
+/* ============ ARCHITECTURE ============ */
 .arch{margin:18px 0 6px}
 .arch-tabs{display:inline-flex;background:var(--panel2);border:1px solid var(--rule);
   border-radius:8px;padding:3px;gap:3px;margin-bottom:14px}
-.arch-tabs button{
-  font-family:var(--mono);font-size:11.5px;padding:6px 13px;border-radius:6px;
-  border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .18s;
-}
+.arch-tabs button{font-family:var(--mono);font-size:11.5px;padding:6px 13px;border-radius:6px;
+  border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .18s}
 .arch-tabs button[aria-selected="true"]{background:var(--bg);color:var(--accent)}
 .arch svg{width:100%;height:auto;display:block}
 .arch-note{font-family:var(--mono);font-size:12px;color:var(--dim);margin:10px 0 0}
 
-/* ---------- stack ---------- */
-.stack-row{display:flex;gap:14px;align-items:baseline;margin-bottom:14px;flex-wrap:wrap}
-.stack-label{
-  font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;
-  color:var(--dim);width:118px;flex-shrink:0;
-}
+/* ============ STACK ============ */
+.stack-row{display:flex;gap:14px;align-items:baseline;margin-bottom:16px;flex-wrap:wrap}
+.stack-label{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  width:128px;flex-shrink:0;display:flex;align-items:center;gap:7px}
+.stack-label b{width:8px;height:8px;border-radius:2px;display:inline-block}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
-.pill{
-  font-family:var(--mono);font-size:12px;padding:4px 10px;border-radius:6px;
-  background:var(--panel);border:1px solid var(--rule);color:var(--muted);
-}
-.pill.hot{border-color:color-mix(in srgb,var(--accent) 45%,transparent);color:var(--accent)}
-.pill.new{border-style:dashed;color:var(--dim)}
+.pill{font-family:var(--mono);font-size:12px;padding:4px 10px;border-radius:6px;
+  background:var(--panel);border:1px solid var(--rule);color:var(--muted)}
+.pill.t1{border-color:color-mix(in srgb,var(--ok) 50%,transparent);color:var(--ok);
+  background:color-mix(in srgb,var(--ok) 7%,var(--panel))}
+.pill.t2{border-color:color-mix(in srgb,var(--c2) 45%,transparent);color:var(--c2)}
+.pill.t3{border-style:dashed;border-color:color-mix(in srgb,var(--warn) 45%,transparent);color:var(--warn)}
 
-/* ---------- experience ---------- */
+/* ============ EXPERIENCE ============ */
 .job{display:flex;gap:18px;padding:15px 0;border-bottom:1px solid var(--rule)}
 .job:last-child{border-bottom:none}
 .job-when{font-family:var(--mono);font-size:12px;color:var(--dim);width:108px;flex-shrink:0;padding-top:3px}
 .job-what h4{margin:0 0 4px;font-size:15.5px;font-weight:600}
 .job-what p{margin:0;font-size:14.5px;color:var(--muted)}
 @media(max-width:600px){
-  .job{flex-direction:column;gap:5px}
-  .job-when{width:auto}
-  .stack-row{flex-direction:column;gap:7px}
-  .stack-label{width:auto}
+  .job{flex-direction:column;gap:5px}.job-when{width:auto}
+  .stack-row{flex-direction:column;gap:8px}.stack-label{width:auto}
 }
 
-/* ---------- chat teaser ---------- */
-.chat{
-  background:var(--panel);border:1px solid var(--rule);border-radius:11px;padding:20px;
-}
+/* ============ CHAT ============ */
+.chat{background:var(--panel);border:1px solid var(--rule);border-radius:11px;padding:20px}
 .chat-row{display:flex;gap:9px;margin-top:14px}
-.chat input{
-  flex:1;background:var(--bg);border:1px solid var(--rule);border-radius:8px;
-  padding:11px 14px;color:var(--fg);font-family:inherit;font-size:14.5px;
-}
+.chat input{flex:1;background:var(--bg);border:1px solid var(--rule);border-radius:8px;
+  padding:11px 14px;color:var(--fg);font-family:inherit;font-size:14.5px}
 .chat input:focus{outline:none;border-color:var(--accent)}
-.chat button{
-  background:var(--accent);color:var(--bg);border:none;border-radius:8px;
-  padding:11px 18px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
-}
-.chat-out{
-  margin-top:14px;font-size:14.5px;color:var(--muted);
-  border-left:2px solid var(--accent);padding-left:14px;display:none;
-}
+.chat button{background:var(--accent);color:var(--bg);border:none;border-radius:8px;
+  padding:11px 18px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.chat-out{margin-top:14px;font-size:14.5px;color:var(--muted);
+  border-left:2px solid var(--accent);padding-left:14px;display:none}
 .chat-out.on{display:block;animation:fade .3s ease}
 
 footer{padding:44px 0 80px;border-top:1px solid var(--rule);
@@ -209,7 +195,12 @@ footer a{color:var(--muted)}
 <body>
 
 <div class="grid-bg"></div>
-<button class="toggle" id="themeBtn" aria-label="Toggle theme">◐</button>
+
+<div class="themes" role="group" aria-label="Colour theme">
+  <button class="sw sw-midnight" data-t="midnight" aria-pressed="true" title="Midnight" aria-label="Midnight theme"></button>
+  <button class="sw sw-paper" data-t="paper" aria-pressed="false" title="Paper" aria-label="Paper theme"></button>
+  <button class="sw sw-ember" data-t="ember" aria-pressed="false" title="Ember" aria-label="Ember theme"></button>
+</div>
 
 <main>
 <div class="wrap">
@@ -229,13 +220,18 @@ footer a{color:var(--muted)}
 
   <section>
     <h2>Four ways coding agents fail</h2>
-    <p class="sub">I benchmark coding agents for a living. These are the failure classes that show up again and again on real repositories. Click through them.</p>
+    <p class="sub">I benchmark coding agents for a living. These are the failure classes that show up again and again on real repositories, ordered by how hard they are to catch.</p>
+    <div class="legend">
+      <i><b style="background:var(--ok)"></b>caught by tests</i>
+      <i><b style="background:var(--warn)"></b>caught by assertions</i>
+      <i><b style="background:var(--bad)"></b>needs a human</i>
+    </div>
 
     <div class="fail-grid" role="tablist">
-      <button class="fail-btn" role="tab" aria-selected="true" data-i="0"><span class="n">01</span>Phantom APIs</button>
-      <button class="fail-btn" role="tab" aria-selected="false" data-i="1"><span class="n">02</span>Plausible params</button>
-      <button class="fail-btn" role="tab" aria-selected="false" data-i="2"><span class="n">03</span>Wrong tool</button>
-      <button class="fail-btn" role="tab" aria-selected="false" data-i="3"><span class="n">04</span>Confidently wrong</button>
+      <button class="fail-btn" role="tab" aria-selected="true"  data-i="0" style="--hue:var(--c1)"><span class="n">01</span>Phantom APIs</button>
+      <button class="fail-btn" role="tab" aria-selected="false" data-i="1" style="--hue:var(--c2)"><span class="n">02</span>Plausible params</button>
+      <button class="fail-btn" role="tab" aria-selected="false" data-i="2" style="--hue:var(--c3)"><span class="n">03</span>Wrong tool</button>
+      <button class="fail-btn" role="tab" aria-selected="false" data-i="3" style="--hue:var(--c4)"><span class="n">04</span>Confidently wrong</button>
     </div>
     <div class="fail-panel" id="failPanel"></div>
   </section>
@@ -243,10 +239,16 @@ footer a{color:var(--muted)}
   <section>
     <h2>Selected work</h2>
     <p class="sub">Three systems, opened up. Expand for the decisions rather than the summary.</p>
+    <div class="legend">
+      <i><b style="background:var(--c1)"></b>AI evaluation</i>
+      <i><b style="background:var(--c2)"></b>data pipelines</i>
+      <i><b style="background:var(--c3)"></b>infrastructure</i>
+    </div>
 
-    <details class="proj" open>
+    <details class="proj" open style="--hue:var(--c1)">
       <summary>
-        <div><h3>Evaluation harnesses for LLM coding agents</h3>
+        <div><span class="ptag">AI evaluation</span>
+        <h3>Evaluation harnesses for LLM coding agents</h3>
         <p class="stack">python · docker · yaml · claude, qwen · brio</p></div>
         <span class="chev">▸</span>
       </summary>
@@ -258,9 +260,10 @@ footer a{color:var(--muted)}
       </div>
     </details>
 
-    <details class="proj">
+    <details class="proj" style="--hue:var(--c2)">
       <summary>
-        <div><h3>LLM pipeline writing into a production CRM</h3>
+        <div><span class="ptag">data pipelines</span>
+        <h3>LLM pipeline writing into a production CRM</h3>
         <p class="stack">python · azure functions · logic apps · openai · salesforce</p></div>
         <span class="chev">▸</span>
       </summary>
@@ -273,9 +276,10 @@ footer a{color:var(--muted)}
       </div>
     </details>
 
-    <details class="proj">
+    <details class="proj" style="--hue:var(--c3)">
       <summary>
-        <div><h3>Rebuilding a GPU-bound service around a queue</h3>
+        <div><span class="ptag">infrastructure</span>
+        <h3>Rebuilding a GPU-bound service around a queue</h3>
         <p class="stack">python · fastapi · celery · redis · cuda</p></div>
         <span class="chev">▸</span>
       </summary>
@@ -299,28 +303,28 @@ footer a{color:var(--muted)}
 
   <section>
     <h2>Stack</h2>
-    <p class="sub">Grouped honestly. The dashed ones are what I'm building with now, not what I'd claim in production.</p>
+    <p class="sub">Grouped by how far I'd go on it, not by category. The colour is the claim.</p>
     <div class="stack-row">
-      <span class="stack-label">Daily</span>
+      <span class="stack-label"><b style="background:var(--ok)"></b>Daily</span>
       <div class="pills">
-        <span class="pill hot">Python</span><span class="pill hot">FastAPI</span><span class="pill hot">Celery</span>
-        <span class="pill hot">Redis</span><span class="pill hot">PostgreSQL</span><span class="pill hot">Docker</span>
-        <span class="pill hot">OpenAI / Anthropic APIs</span><span class="pill hot">Pandas</span>
+        <span class="pill t1">Python</span><span class="pill t1">FastAPI</span><span class="pill t1">Celery</span>
+        <span class="pill t1">Redis</span><span class="pill t1">PostgreSQL</span><span class="pill t1">Docker</span>
+        <span class="pill t1">OpenAI / Anthropic APIs</span><span class="pill t1">Pandas</span>
       </div>
     </div>
     <div class="stack-row">
-      <span class="stack-label">Comfortable</span>
+      <span class="stack-label"><b style="background:var(--c2)"></b>Shipped with</span>
       <div class="pills">
-        <span class="pill">Azure Functions</span><span class="pill">Logic Apps</span><span class="pill">AWS</span>
-        <span class="pill">CI/CD</span><span class="pill">React</span><span class="pill">MongoDB</span>
-        <span class="pill">Scrapy</span><span class="pill">CUDA</span><span class="pill">Retool</span>
+        <span class="pill t2">Azure Functions</span><span class="pill t2">Logic Apps</span><span class="pill t2">AWS</span>
+        <span class="pill t2">CI/CD</span><span class="pill t2">React</span><span class="pill t2">MongoDB</span>
+        <span class="pill t2">Scrapy</span><span class="pill t2">CUDA</span><span class="pill t2">Retool</span>
       </div>
     </div>
     <div class="stack-row">
-      <span class="stack-label">Building with</span>
+      <span class="stack-label"><b style="background:var(--warn)"></b>Learning now</span>
       <div class="pills">
-        <span class="pill new">LangGraph</span><span class="pill new">LangChain</span><span class="pill new">RAG + eval</span>
-        <span class="pill new">TypeScript</span><span class="pill new">Spark</span><span class="pill new">Databricks</span>
+        <span class="pill t3">LangGraph</span><span class="pill t3">LangChain</span><span class="pill t3">RAG + eval</span>
+        <span class="pill t3">TypeScript</span><span class="pill t3">Spark</span><span class="pill t3">Databricks</span>
       </div>
     </div>
   </section>
@@ -330,7 +334,7 @@ footer a{color:var(--muted)}
     <div class="job">
       <div class="job-when">2025 — now</div>
       <div class="job-what">
-        <h4>LLM Developer · Brio</h4>
+        <h4>Data &amp; AI Engineer (LLMs) · Brio</h4>
         <p>Agent evaluation and validation harnesses. Tool-calling scenarios across Google Workspace, Jira and Zendesk, with the Python validation code and gold-standard trajectories behind them. Review other engineers' scenarios for assertion quality.</p>
       </div>
     </div>
@@ -377,66 +381,67 @@ footer a{color:var(--muted)}
 </main>
 
 <script>
-/* theme */
-const root=document.documentElement, tb=document.getElementById('themeBtn');
-try{const s=localStorage.getItem('theme'); if(s) root.setAttribute('data-theme',s);}catch(e){}
-tb.onclick=()=>{
-  const cur=root.getAttribute('data-theme');
-  const dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const next=cur?(cur==='light'?'dark':'light'):(dark?'light':'dark');
-  root.setAttribute('data-theme',next);
-  try{localStorage.setItem('theme',next);}catch(e){}
-};
+/* ---- themes ---- */
+const root=document.documentElement;
+function setTheme(t){
+  root.setAttribute('data-theme',t);
+  document.querySelectorAll('.sw').forEach(s=>s.setAttribute('aria-pressed',String(s.dataset.t===t)));
+  try{localStorage.setItem('theme',t);}catch(e){}
+}
+try{
+  const saved=localStorage.getItem('theme');
+  if(saved) setTheme(saved);
+  else setTheme(window.matchMedia('(prefers-color-scheme: light)').matches?'paper':'midnight');
+}catch(e){setTheme('midnight');}
+document.querySelectorAll('.sw').forEach(s=>s.onclick=()=>setTheme(s.dataset.t));
 
-/* failure taxonomy */
+/* ---- failure taxonomy ---- */
 const fails=[
- {t:'Phantom API endpoints',
-  d:'The agent calls a method that does not exist. It is syntactically perfect, named exactly how the library <em>should</em> have named it, and fails only at runtime.',
+ {t:'Phantom API endpoints',sev:'low',sevl:'caught by tests',
+  d:'The agent calls a method that does not exist. Syntactically perfect, named exactly how the library <em>should</em> have named it, and fails only at runtime.',
   why:'Caught by running the task in a real container against the real library, not by reading the diff.',
   code:'<span class="c"># agent output</span>\nclient.<span class="b">batch_update_records</span>(records)\n\n<span class="c"># actual API</span>\nclient.<span class="g">bulk</span>.<span class="g">update</span>(records, batch_size=200)'},
- {t:'Plausible but wrong parameters',
-  d:'The right function, called with arguments that look reasonable and quietly change behaviour. These are the expensive ones, because nothing errors.',
+ {t:'Plausible but wrong parameters',sev:'med',sevl:'caught by assertions',
+  d:'The right function, called with arguments that look reasonable and quietly change behaviour. Expensive, because nothing errors.',
   why:'Caught by assertions on resulting state, not on whether the call succeeded.',
   code:'<span class="c"># agent output</span>\nretriever.search(q, <span class="b">top_k=3</span>, <span class="b">rerank=False</span>)\n\n<span class="c"># returns results. recall@10 drops 34%.</span>\n<span class="c"># no error, no warning, worse answers.</span>'},
- {t:'Wrong tool for a understood task',
+ {t:'Wrong tool for an understood task',sev:'med',sevl:'caught by assertions',
   d:'The agent correctly understands the goal and reaches for the wrong capability. It reads a file when it should query, or shells out when a client exists.',
   why:'Caught by trajectory comparison against a gold-standard path, not by output alone.',
   code:'<span class="c"># task: find all open tickets for a customer</span>\n\n<span class="b">bash</span>(<span class="b">"grep -r customer_id ./tickets"</span>)\n\n<span class="c"># available, unused:</span>\n<span class="g">zendesk.search</span>(query=<span class="g">"requester:..."</span>)'},
- {t:'Confidently wrong output',
-  d:'Well-formed, schema-valid, internally consistent and incorrect. This is the hardest class, because it passes every structural check you can write.',
+ {t:'Confidently wrong output',sev:'high',sevl:'needs a human',
+  d:'Well-formed, schema-valid, internally consistent and incorrect. The hardest class, because it passes every structural check you can write.',
   why:'Cannot be caught by validation. Needs a gold-standard answer or a human in the loop. This is why I build eval sets rather than just validators.',
-  code:'<span class="c"># schema says: {"status": enum, "confidence": float}</span>\n\n{<span class="g">"status"</span>: <span class="g">"resolved"</span>, <span class="g">"confidence"</span>: <span class="g">0.94</span>}\n\n<span class="c"># valid JSON. valid enum. valid range.</span>\n<span class="c"># ticket is </span><span class="b">open</span><span class="c">.</span>'}
+  code:'<span class="c"># schema: {"status": enum, "confidence": float}</span>\n\n{<span class="g">"status"</span>: <span class="g">"resolved"</span>, <span class="g">"confidence"</span>: <span class="g">0.94</span>}\n\n<span class="c"># valid JSON. valid enum. valid range.</span>\n<span class="c"># ticket is </span><span class="b">open</span><span class="c">.</span>'}
 ];
+const hues=['var(--c1)','var(--c2)','var(--c3)','var(--c4)'];
 const fp=document.getElementById('failPanel');
 function drawFail(i){
   const f=fails[i];
+  fp.style.setProperty('--hue',hues[i]);
   fp.className='fail-panel fade';
-  fp.innerHTML=`<h4>${f.t}</h4><p>${f.d}</p><div class="snippet">${f.code}</div><p style="margin-top:14px;font-size:14px">${f.why}</p>`;
+  fp.innerHTML=`<h4>${f.t}<span class="sev sev-${f.sev}">${f.sevl}</span></h4>
+    <p>${f.d}</p><div class="snippet">${f.code}</div><div class="catch">${f.why}</div>`;
   void fp.offsetWidth;
 }
 document.querySelectorAll('.fail-btn').forEach(b=>{
   b.onclick=()=>{
     document.querySelectorAll('.fail-btn').forEach(x=>x.setAttribute('aria-selected','false'));
-    b.setAttribute('aria-selected','true');
-    drawFail(+b.dataset.i);
-  };
+    b.setAttribute('aria-selected','true');drawFail(+b.dataset.i);};
 });
 drawFail(0);
 
-/* architecture diagram */
-const C={fg:'currentColor'};
+/* ---- architecture ---- */
 const archs=[
 {note:'one request holds one GPU. p95 climbs with concurrency.',
  svg:`<svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" style="color:var(--muted)">
  <g font-family="JetBrains Mono, monospace" font-size="11" fill="currentColor">
  <rect x="8" y="48" width="92" height="40" rx="7" fill="none" stroke="currentColor" stroke-opacity=".4"/>
  <text x="54" y="72" text-anchor="middle">client</text>
- <path d="M104 68 H176" stroke="currentColor" stroke-opacity=".4"/>
- <path d="M170 64 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <path d="M104 68 H176" stroke="currentColor" stroke-opacity=".4"/><path d="M170 64 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
  <rect x="180" y="48" width="104" height="40" rx="7" fill="none" stroke="currentColor" stroke-opacity=".4"/>
  <text x="232" y="72" text-anchor="middle">api</text>
- <path d="M288 68 H360" stroke="var(--bad)" stroke-opacity=".85"/>
- <path d="M354 64 l6 4 -6 4" fill="none" stroke="var(--bad)"/>
+ <path d="M288 68 H360" stroke="var(--bad)" stroke-opacity=".85"/><path d="M354 64 l6 4 -6 4" fill="none" stroke="var(--bad)"/>
  <text x="324" y="58" text-anchor="middle" fill="var(--bad)" font-size="10">blocks</text>
  <rect x="364" y="48" width="104" height="40" rx="7" fill="none" stroke="var(--bad)" stroke-opacity=".6"/>
  <text x="416" y="72" text-anchor="middle" fill="var(--bad)">gpu infer</text>
@@ -449,32 +454,28 @@ const archs=[
  <g font-family="JetBrains Mono, monospace" font-size="11" fill="currentColor">
  <rect x="8" y="48" width="86" height="40" rx="7" fill="none" stroke="currentColor" stroke-opacity=".4"/>
  <text x="51" y="72" text-anchor="middle">client</text>
- <path d="M98 62 H162" stroke="currentColor" stroke-opacity=".4"/>
- <path d="M156 58 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
- <path d="M162 78 H98" stroke="var(--accent)" stroke-opacity=".75"/>
- <path d="M104 74 l-6 4 6 4" fill="none" stroke="var(--accent)"/>
- <text x="130" y="96" text-anchor="middle" font-size="9" fill="var(--accent)">job id</text>
+ <path d="M98 62 H162" stroke="currentColor" stroke-opacity=".4"/><path d="M156 58 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <path d="M162 78 H98" stroke="var(--ok)" stroke-opacity=".75"/><path d="M104 74 l-6 4 6 4" fill="none" stroke="var(--ok)"/>
+ <text x="130" y="96" text-anchor="middle" font-size="9" fill="var(--ok)">job id</text>
  <rect x="166" y="48" width="86" height="40" rx="7" fill="none" stroke="currentColor" stroke-opacity=".4"/>
  <text x="209" y="72" text-anchor="middle">api</text>
- <path d="M256 68 H308" stroke="currentColor" stroke-opacity=".4"/>
- <path d="M302 64 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
- <rect x="312" y="48" width="86" height="40" rx="7" fill="none" stroke="var(--accent2)" stroke-opacity=".6"/>
- <text x="355" y="72" text-anchor="middle" fill="var(--accent2)">redis q</text>
- <path d="M402 68 H452" stroke="currentColor" stroke-opacity=".4"/>
- <path d="M446 64 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
- <rect x="456" y="24" width="90" height="26" rx="6" fill="none" stroke="var(--accent)" stroke-opacity=".5"/>
- <text x="501" y="41" text-anchor="middle" font-size="10" fill="var(--accent)">worker</text>
- <rect x="456" y="56" width="90" height="26" rx="6" fill="none" stroke="var(--accent)" stroke-opacity=".5"/>
- <text x="501" y="73" text-anchor="middle" font-size="10" fill="var(--accent)">worker</text>
- <rect x="456" y="88" width="90" height="26" rx="6" fill="none" stroke="var(--accent)" stroke-opacity=".5"/>
- <text x="501" y="105" text-anchor="middle" font-size="10" fill="var(--accent)">worker</text>
+ <path d="M256 68 H308" stroke="currentColor" stroke-opacity=".4"/><path d="M302 64 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <rect x="312" y="48" width="86" height="40" rx="7" fill="none" stroke="var(--c2)" stroke-opacity=".6"/>
+ <text x="355" y="72" text-anchor="middle" fill="var(--c2)">redis q</text>
+ <path d="M402 68 H452" stroke="currentColor" stroke-opacity=".4"/><path d="M446 64 l6 4 -6 4" fill="none" stroke="currentColor" stroke-opacity=".4"/>
+ <rect x="456" y="24" width="90" height="26" rx="6" fill="none" stroke="var(--ok)" stroke-opacity=".5"/>
+ <text x="501" y="41" text-anchor="middle" font-size="10" fill="var(--ok)">worker</text>
+ <rect x="456" y="56" width="90" height="26" rx="6" fill="none" stroke="var(--ok)" stroke-opacity=".5"/>
+ <text x="501" y="73" text-anchor="middle" font-size="10" fill="var(--ok)">worker</text>
+ <rect x="456" y="88" width="90" height="26" rx="6" fill="none" stroke="var(--ok)" stroke-opacity=".5"/>
+ <text x="501" y="105" text-anchor="middle" font-size="10" fill="var(--ok)">worker</text>
  <path d="M550 69 H582" stroke="currentColor" stroke-opacity=".3"/>
  <rect x="586" y="52" width="46" height="34" rx="6" fill="none" stroke="currentColor" stroke-opacity=".35"/>
  <text x="609" y="73" text-anchor="middle" font-size="10">gpu</text>
  <text x="609" y="104" text-anchor="middle" font-size="9" opacity=".6">shared</text>
  </g></svg>`}
 ];
-const archSvg=document.getElementById('archSvg'), archNote=document.getElementById('archNote');
+const archSvg=document.getElementById('archSvg'),archNote=document.getElementById('archNote');
 function drawArch(i){archSvg.innerHTML=archs[i].svg;archSvg.className='fade';archNote.textContent=archs[i].note;void archSvg.offsetWidth;}
 document.querySelectorAll('[data-arch]').forEach(b=>{
   b.onclick=(e)=>{e.preventDefault();
@@ -483,13 +484,13 @@ document.querySelectorAll('[data-arch]').forEach(b=>{
 });
 drawArch(0);
 
-/* chat teaser */
+/* ---- chat teaser ---- */
 const out=document.getElementById('out');
 document.getElementById('ask').onclick=()=>{
   const q=document.getElementById('q').value.trim();
   out.className='chat-out on';
-  out.innerHTML = q
-    ? `Not live yet. When it is, it will answer from a verified fact base and say "I don't have that" rather than improvise. Until then, email me and you will get the real answer: <a href="mailto:humzanoor8@gmail.com?subject=Question&body=${encodeURIComponent(q)}" style="color:var(--accent)">send this question</a>.`
+  out.innerHTML=q
+    ? `Not live yet. When it is, it will answer from a verified fact base and say "I don't have that" rather than improvise. Until then, email me and you'll get the real answer: <a href="mailto:humzanoor8@gmail.com?subject=Question&body=${encodeURIComponent(q)}" style="color:var(--accent)">send this question</a>.`
     : `Type a question first.`;
 };
 document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('ask').click();});
