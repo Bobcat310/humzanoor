@@ -183,9 +183,18 @@ h2{font-family:var(--mono);font-size:12px;font-weight:500;text-transform:upperca
 .chat input:focus{outline:none;border-color:var(--accent)}
 .chat button{background:var(--accent);color:var(--bg);border:none;border-radius:8px;
   padding:11px 18px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.chat input:disabled,.chat button:disabled{opacity:.55;cursor:not-allowed}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip-q{font-family:var(--mono);font-size:11.5px;padding:6px 11px;border-radius:7px;
+  background:var(--bg);border:1px dashed var(--rule);color:var(--muted);
+  cursor:pointer;transition:all .16s}
+.chip-q:hover{border-style:solid;border-color:var(--accent);color:var(--accent)}
 .chat-out{margin-top:14px;font-size:14.5px;color:var(--muted);
-  border-left:2px solid var(--accent);padding-left:14px;display:none}
+  border-left:2px solid var(--accent);padding-left:14px;display:none;white-space:pre-wrap}
 .chat-out.on{display:block;animation:fade .3s ease}
+.chat-out.err{border-left-color:var(--bad)}
+.dots::after{content:'';animation:dots 1.3s steps(4,end) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
 
 footer{padding:44px 0 80px;border-top:1px solid var(--rule);
   font-family:var(--mono);font-size:12.5px;color:var(--dim)}
@@ -363,10 +372,16 @@ footer a{color:var(--muted)}
 
   <section>
     <h2>Ask me something</h2>
-    <p class="sub">A grounded retrieval layer over a verified fact base, with an explicit refusal path. Under construction, and built the way I'd build it in production.</p>
+    <p class="sub">Answers come from a curated fact base, not from the model's impression of me. If it doesn't know, it says so rather than improvising. That constraint is the point: a portfolio bot that embellishes is worse than no bot.</p>
     <div class="chat">
+      <div class="chips">
+        <button class="chip-q" data-q="Does he have Spark or Databricks experience?">Spark experience?</button>
+        <button class="chip-q" data-q="What's the most complex system he's built?">Most complex system?</button>
+        <button class="chip-q" data-q="Is he available, and would he need visa sponsorship?">Availability?</button>
+        <button class="chip-q" data-q="How much frontend experience does he actually have?">Frontend depth?</button>
+      </div>
       <div class="chat-row">
-        <input id="q" placeholder="Does he have Spark experience?" aria-label="Ask a question">
+        <input id="q" placeholder="Ask about his experience..." aria-label="Ask a question" maxlength="500" autocomplete="off">
         <button id="ask">Ask</button>
       </div>
       <div class="chat-out" id="out"></div>
@@ -484,16 +499,60 @@ document.querySelectorAll('[data-arch]').forEach(b=>{
 });
 drawArch(0);
 
-/* ---- chat teaser ---- */
+/* ---- chat ---- */
 const out=document.getElementById('out');
-document.getElementById('ask').onclick=()=>{
-  const q=document.getElementById('q').value.trim();
+const input=document.getElementById('q');
+const askBtn=document.getElementById('ask');
+let inFlight=false;
+
+function show(text,isError){
+  out.className='chat-out on'+(isError?' err':'');
+  out.textContent=text;
+}
+
+async function ask(question){
+  const q=(question??input.value).trim();
+  if(!q){show('Type a question first.');return;}
+  if(inFlight)return;
+
+  inFlight=true;
+  input.disabled=askBtn.disabled=true;
   out.className='chat-out on';
-  out.innerHTML=q
-    ? `Not live yet. When it is, it will answer from a verified fact base and say "I don't have that" rather than improvise. Until then, email me and you'll get the real answer: <a href="mailto:humzanoor8@gmail.com?subject=Question&body=${encodeURIComponent(q)}" style="color:var(--accent)">send this question</a>.`
-    : `Type a question first.`;
-};
-document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('ask').click();});
+  out.innerHTML='<span class="dots">thinking</span>';
+
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),25000);
+
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({question:q}),
+      signal:controller.signal
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok){
+      show(data.error||'That did not work. Email humzanoor8@gmail.com.',true);
+    }else{
+      show(data.answer);
+    }
+  }catch(err){
+    show(err.name==='AbortError'
+      ? 'That took too long. Email humzanoor8@gmail.com.'
+      : 'Could not reach the server. Email humzanoor8@gmail.com.',true);
+  }finally{
+    clearTimeout(timeout);
+    inFlight=false;
+    input.disabled=askBtn.disabled=false;
+    input.focus();
+  }
+}
+
+askBtn.onclick=()=>ask();
+input.addEventListener('keydown',e=>{if(e.key==='Enter')ask();});
+document.querySelectorAll('.chip-q').forEach(b=>{
+  b.onclick=()=>{input.value=b.dataset.q;ask(b.dataset.q);};
+});
 </script>
 
 </body>
